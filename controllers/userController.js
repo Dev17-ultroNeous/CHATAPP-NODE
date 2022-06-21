@@ -78,15 +78,15 @@ exports.contactSync = catchAsyncError(async (req, res, next) => {
     res.status(200).json({
         status: true,
         data,
-    });
 
+    });
 })
 
 exports.getChatUser = catchAsyncError(async (req, res, next) => {
     let chatUsers = await LastMessage.find({ receiver: req.user._id });
     let pushRecevier = [];
     for (var i = 0; i < chatUsers.length; i++) {
-        let recevierValue = await User.find({ _id: chatUsers[i].sender });
+        let recevierValue = await User.find({ _id: chatUsers[i].sender }).select(['_id', 'name', 'phone', 'lastMessage', 'time', 'sorting', 'lastSeen', 'isOnline']);
         pushRecevier.push(...recevierValue);
     }
     let receiver = pushRecevier.sort((a, b) => {
@@ -95,7 +95,7 @@ exports.getChatUser = catchAsyncError(async (req, res, next) => {
     let chatUser = await LastMessage.find({ sender: req.user._id });
     let values = [];
     for (var i = 0; i < chatUser.length; i++) {
-        let value = await User.find({ _id: chatUser[i].receiver });
+        let value = await User.find({ _id: chatUser[i].receiver }).select(['_id', 'name', 'phone', 'lastMessage', 'time', 'sorting', 'lastSeen', 'isOnline']);
         values.push(...value);
     }
     let sender = values.sort((a, b) => {
@@ -123,7 +123,8 @@ exports.isOnline = catchAsyncError(async (req, res, next) => {
         { _id: req.user._id },
         { isOnline: true },
         { new: true }
-    );
+    ).select(['_id', 'name', 'phone', 'lastMessage', 'time', 'sorting', 'lastSeen', 'isOnline']);
+
     res.status(200).json({
         status: true,
         data,
@@ -143,7 +144,7 @@ exports.isOffline = catchAsyncError(async (req, res, next) => {
             isOnline: false,
         },
         { new: true }
-    );
+    ).select(['_id', 'name', 'phone', 'lastMessage', 'time', 'sorting', 'lastSeen', 'isOnline']);
     res.status(200).json({
         status: true,
         data,

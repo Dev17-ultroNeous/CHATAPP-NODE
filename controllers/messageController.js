@@ -23,7 +23,7 @@ exports.messageSend = catchAsyncError(async (req, res, next) => {
         receiver: receiverid,
         time: time,
         type: type,
-    });
+    })
 
     let lastMessages = await Message.findOne({
         sender: senderid,
@@ -91,31 +91,58 @@ exports.messageSend = catchAsyncError(async (req, res, next) => {
         });
     }
     res.status(200).json({
+        status: true,
         data,
     });
-
-
 })
 
 exports.messageGet = catchAsyncError(async (req, res, next) => {
     if (!req.body.receiverid) {
         return res.status(401).json({
-            status: "fail",
+            status: false,
             message: "Please enter receiverid.",
         });
     }
     let value = await Message.find({ sender: req.body.senderid, receiver: req.body.receiverid })
+
     let data = []
     for (var i = 0; i < value.length; i++) {
         let status = await Message.findByIdAndUpdate(
             { _id: value[i]._id.toString() },
             { messagestatus: "1" },
             { new: true }
-        );
+        ).select(['_id', 'sender', 'receiver', 'message', 'time', 'type', 'messagestatus']);
+
         data.push(status)
     }
     res.status(200).json({
-        status: "Success",
+        status: true,
+        data,
+    });
+})
+
+
+exports.blueTrick = catchAsyncError(async (req, res, next) => {
+    if (!req.body.receiverid) {
+        return res.status(401).json({
+            status: false,
+            message: "Please enter receiverid.",
+        });
+    }
+    let value = await Message.find({ sender: req.body.senderid, receiver: req.body.receiverid })
+
+    let data = []
+    for (var i = 0; i < value.length; i++) {
+        let status = await Message.findByIdAndUpdate(
+            { _id: value[i]._id.toString() },
+            { messagestatus: "2" },
+            { new: true }
+        ).select(['_id', 'sender', 'receiver', 'message', 'time', 'type', 'messagestatus']);
+
+        data.push(status)
+    }
+    res.status(200).json({
+        status: true,
         data,
     });
 })

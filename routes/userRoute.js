@@ -46,4 +46,6 @@ router.post("/isonline", protect, userController.isOnline);
 
 router.post("/isoffline", protect, userController.isOffline);
 
+router.post("/bluetrick", messageController.blueTrick);
+
 module.exports = router;
